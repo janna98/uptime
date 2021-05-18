@@ -41,7 +41,7 @@ defmodule CosmosodysseyWeb do
       unquote(view_helpers())
 
       # Import liveview
-      import Phoenix.LiveView.Helpers
+      #import Phoenix.LiveView.Helpers
     end
   end
 
@@ -51,7 +51,7 @@ defmodule CosmosodysseyWeb do
 
       import Plug.Conn
       import Phoenix.Controller
-      import Phoenix.LiveView.Router
+      #import Phoenix.LiveView.Router
     end
   end
 
