@@ -1,0 +1,43 @@
+<h2>Create New Account</h2>
+<%= form_for @changeset, Routes.user_path(@conn, :create), fn user -> %>
+    <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+        <p>Invalid account details! Please enter valid details.</p>
+    </div>
+    <% end %>
+
+    <div class="form-group">
+        <%= label user, :first_name, class: "control-label" %>
+        <%= text_input user, :first_name, id: "first_name", class: "form-control" %>
+        <%= error_tag user, :first_name %>
+    </div>
+
+    <div class="form-group">
+        <%= label user, :last_name, class: "control-label" %>
+        <%= text_input user, :last_name, id: "last_name", class: "form-control" %>
+        <%= error_tag user, :last_name %>
+    </div>
+
+    <div class="form-group">
+        <%= label user, :email, class: "control-label" %>
+        <%= text_input user, :email, id: "email", type: "email", class: "form-control" %>
+        <%= error_tag user, :email %>
+    </div>
+
+    <div class="form-group">
+        <%= label user, :password, class: "control-label" %>
+        <%= text_input user, :password, id: "password", type: "password", class: "form-control" %>
+        <%= error_tag user, :password %>
+    </div>
+
+    <div class="form-group">
+        <section class="column">
+            <section class="column">
+                <%= submit "Submit", id: "register_button", class: "btn btn-primary" %>
+            </section>
+            <section class="column">
+                <span><%= link "Back", to: Routes.page_path(@conn, :index) %></span>
+            </section>
+        </section>
+    </div>
+<% end %>

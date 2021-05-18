@@ -1,0 +1,107 @@
+/* This file is for your main application css. */
+@import "./phoenix.css";
+
+/* Alerts and form errors */
+.alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+.alert-info {
+  color: #31708f;
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+}
+.alert-warning {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+}
+.alert-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+.alert p {
+  margin-bottom: 0;
+}
+.alert:empty {
+  display: none;
+}
+.invalid-feedback {
+  color: #a94442;
+  display: block;
+  margin: -1rem 0 2rem;
+}
+/* placement css */
+.last-column{
+  border-left: 0.1rem solid #e1e1e1;
+}
+body{
+  margin: 0px;
+}
+.navigation{
+  background: url("../static/images/32042.jpg") white;
+  height: 150px;
+  background-size: cover;
+}
+.navigation h1{
+  color: white;
+  margin-bottom: 0;
+}
+.table {
+  border: 0.1rem solid #e1e1e1;
+  padding: 1rem;
+  border-radius: 6px;
+  background: white;
+}
+td, th {
+  padding: 1.2rem 0.2rem;
+}
+.results{
+  width: 80%;
+  float: left;
+}
+.filter{
+  width: 19%;
+  float: right;
+  margin-left: 1%;
+}
+.w-80 input{
+  width: 80%;
+}
+.w-30 input{
+  text-align: center;
+  width: 30%;
+}
+.flex-box{
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+  width: 100%;
+}
+.nav-links {
+  display: flex;
+  width: 30%;
+  order: 2;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+}
+.nav-links a {
+  text-decoration: none;
+  color: white;
+  font-size: larger;
+}
+.nav-title {
+  order: 1;
+}
+.full-height{
+  height: 100%;
+}
+.planet {
+  font-weight: bold;
+}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Cosmosodyssey</title>
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+    <%= csrf_meta_tag() %>
+    <script defer type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+  </head>
+  <body>
+    <header class="navigation">
+      <section class="container full-height">
+        <nav role="navigation" class="flex-box">
+          <%= if Cosmosodyssey.Authentication.load_current_user(@conn) do %>
+          <div class="nav-links">
+            <%= link "Home", id: "home_button", to: Routes.page_path(@conn, :index)%>
+            <%= link "Bookings", id: "booking_button", to: Routes.booking_path(@conn, :index)%>
+            <!--span><%=Cosmosodyssey.Authentication.load_current_user(@conn).first_name%> <%=Cosmosodyssey.Authentication.load_current_user(@conn).last_name%></span-->
+            <%= link "Logout", id: "logout_button", to: Routes.session_path(@conn, :delete, Cosmosodyssey.Authentication.load_current_user(@conn)), method: "delete"%>
+          </div>
+          <% end %>
+          <h1 class="nav-title">Space Adventure Agency</h1>
+        </nav>
+      </section>
+    </header>
+    <main role="main" class="container">
+      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+      <%= @inner_content %>
+      <a href='https://www.freepik.com/vectors/technology'>Technology vector created by brgfx - www.freepik.com</a>
+    </main>
+  </body>
+</html>

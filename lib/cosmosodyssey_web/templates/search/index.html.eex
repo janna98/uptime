@@ -1,0 +1,9 @@
+<div class="w-30">
+    <%= form_for @conn, Routes.search_path(@conn, :search), [method: :get], fn search -> %>
+    <h2>Search for available trips between planets</h2>
+    <%= text_input search, :pickup_planet, id: "pickup_planet", placeholder: "Pick-up planet" %>
+    <%= text_input search, :dropoff_planet, id: "dropoff_planet", placeholder: "Drop-off planet" %>
+    <br>
+    <%= submit "Search", id: "submit_search" %>
+    <% end %>
+</div>

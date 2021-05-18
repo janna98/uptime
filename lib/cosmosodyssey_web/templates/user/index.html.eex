@@ -1,0 +1,2 @@
+<%= render CosmosodysseyWeb.UserView, "new.html", conn: @conn %>
+<span><%= link "Back", to: Routes.page_path(@conn, :index) %></span>

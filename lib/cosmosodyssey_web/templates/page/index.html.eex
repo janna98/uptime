@@ -1,0 +1,8 @@
+<section class="phx-hero">
+  <%= if Cosmosodyssey.Authentication.load_current_user(@conn) do %>
+    <%= render CosmosodysseyWeb.SearchView, "index.html", conn: @conn %>
+  <% else %>
+    <%= render CosmosodysseyWeb.SessionView, "new.html", conn: @conn %>
+    <span><%= link "Create new account", to: Routes.user_path(@conn, :new) %></span>
+  <% end %>
+</section>

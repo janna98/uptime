@@ -1,0 +1,1 @@
+<%= render CosmosodysseyWeb.RouteView, "index.html", conn: @conn, providers: @providers, pickup_planet: @pickup_planet, dropoff_planet: @dropoff_planet %>

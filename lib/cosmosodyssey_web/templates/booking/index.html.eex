@@ -1,0 +1,34 @@
+<h2>Your bookings: </h2>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Booking status</th>
+        <th>Pick-up planet</th>
+        <th>Drop-off planet</th>
+        <th>Start time</th>
+        <th>End time</th>
+        <th>Price</th>
+        <th>Company</th>
+        <th>Duration</th>
+    </tr>
+    </thead>
+    <tbody>
+    <%= for booking <- @bookings do %>
+    <tr>
+        <td><%= booking.booking.status %></td>
+        <td><%= booking.route.pickup_planet %></td>
+        <td><%= booking.route.dropoff_planet %></td>
+        <td><%= CosmosodysseyWeb.BookingController.format_single_datetime(booking.provider.start_time) %></td>
+        <td><%= CosmosodysseyWeb.BookingController.format_single_datetime(booking.provider.end_time) %></td>
+        <td><%= booking.provider.price %></td>
+        <td><%= booking.provider.company %></td>
+        <%= if booking.booking.travel_time == 1 do%>
+        <td><%= booking.booking.travel_time %> day</td>
+        <% end %>
+        <%= if booking.booking.travel_time != 1 do%>
+        <td><%= booking.booking.travel_time %> days</td>
+        <% end %>
+    </tr>
+    <% end %>
+    </tbody>
+</table>
