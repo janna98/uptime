@@ -1,6 +1,5 @@
 defmodule CosmosodysseyWeb.Graph do
 
-  require Logger
   alias Graph.Edge
 
   def into_graph(routes) do

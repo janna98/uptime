@@ -71,7 +71,6 @@ defmodule CosmosodysseyWeb.SearchController do
       Timex.compare( parsed_pl1_valid_until, parsed_pl2_valid_until ) >= 0
     end)
     if length(sorted_price_lists) == 15 do
-      Logger.warn "deleting older pl due to 15 limit"
       Repo.delete!(List.last(sorted_price_lists))
     end
     Repo.insert!(price_list_to_add)
@@ -101,19 +100,6 @@ defmodule CosmosodysseyWeb.SearchController do
     {:ok, parsed_start_time} = string_to_datetime(start_time)
     {:ok, parsed_end_time} = string_to_datetime(end_time)
     Timex.diff(parsed_end_time, parsed_start_time, :days)
-  end
-
-  defp format_datetimes(provider) do
-    # parse string datetimes to DateTime object
-    {:ok, parsed_start_time} = string_to_datetime(provider.start_time)
-    {:ok, parsed_end_time} = string_to_datetime(provider.end_time)
-    # format datetime
-    {:ok, formatted_start_time} = Timex.format(parsed_start_time, "{WDshort}, {D} {Mshort} {YYYY}, {h24}:{m}")
-    {:ok, formatted_end_time} = Timex.format(parsed_end_time, "{WDshort}, {D} {Mshort} {YYYY}, {h24}:{m}")
-
-    # apply changes and return the updated provider
-    changeset = Changeset.cast(provider, %{start_time: formatted_start_time, end_time: formatted_end_time}, [:start_time, :end_time])
-    Changeset.apply_changes(changeset)
   end
 
   def get_providers(price_list_id, from, to) do
@@ -183,7 +169,6 @@ defmodule CosmosodysseyWeb.SearchController do
             |> redirect(to: Routes.page_path(conn, :index))
           true ->
             price_list = get_valid_price_list()
-            Logger.warn inspect price_list
             case price_list do
               {:error, nil} ->
                 # no valid price list was found, so fetch API for new one (if exists)

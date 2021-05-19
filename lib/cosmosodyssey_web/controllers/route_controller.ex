@@ -12,7 +12,7 @@ defmodule CosmosodysseyWeb.RouteController do
     end)
   end
 
-  defp order_providers(route_and_providers, params \\ %{}) do
+  defp order_providers(route_and_providers, params) do
     # order providers by a field and either in desc or asc order
     {type, field} = order_by(params)
     if type == nil || field == nil do
@@ -49,10 +49,10 @@ defmodule CosmosodysseyWeb.RouteController do
     id_indexes |> List.keysort(0)
   end
 
-  defp get_chronological_validity(provider_pairs) do
+  defp get_chronological_validity(sorted) do
     # check if all providers are chronologically in order
     provider_pairs = sorted |> Enum.map(fn{_, id} ->
-      provider = Repo.get!(Provider, id)
+      Repo.get!(Provider, id)
     end) |> Enum.chunk_every(2, 1, :discard) # chunk them in groups of 2 so we can compare their end and start times
     provider_pairs |> Enum.map(fn [provider1, provider2]->
       {:ok, parsed_end_time} = SearchController.string_to_datetime(provider1.end_time)
@@ -78,8 +78,6 @@ defmodule CosmosodysseyWeb.RouteController do
     # get all passed parameters
     from = get_in(params, ["from"])
     to = get_in(params, ["to"])
-    # since Phoenix does not allow to pass lists as params, we concatenated them into a string in the template and now have to split them again
-    routes = String.split(get_in(params, ["routes"]), "-")
     route_no = get_in(params, ["route_no"])
     # filter out provider ID-s from the params
     ids = params |> Enum.filter(fn {param_name, _} ->
@@ -115,7 +113,7 @@ defmodule CosmosodysseyWeb.RouteController do
                 |> render("index.html", providers: providers, routes: pairs, pickup_planet: from, dropoff_planet: to)
               false ->
                 # Phoenix does not allow to pass complex maps or lists as params, so extract the ids as a simple list
-                ids = id_indexes |> Enum.map(fn {_, id} -> id end)
+                ids = sorted |> Enum.map(fn {_, id} -> id end)
                 conn
                 |> redirect(to: Routes.booking_path(conn, :new, providers: ids, routes: pairs, from: from, to: to))
             end

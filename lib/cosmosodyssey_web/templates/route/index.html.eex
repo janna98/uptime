@@ -45,7 +45,6 @@
         <% end %>
         <%= hidden_input b, :from, value: @pickup_planet %>
         <%= hidden_input b, :to, value: @dropoff_planet %>
-        <%= hidden_input b, :routes, value: Enum.join(@routes, "-") %>
         <%= hidden_input b, :route_no, value: length(@providers) %>
         <%= if length(@providers) > 1 do %>
             <%= submit "Book"%>

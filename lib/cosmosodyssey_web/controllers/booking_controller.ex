@@ -91,7 +91,7 @@ defmodule CosmosodysseyWeb.BookingController do
         conn
         |> put_flash(:info, "Booking #{booking.id} successfully created!")
         |> redirect(to: Routes.page_path(conn, :index))
-      {:error, changeset} ->
+      {:error, _changeset} ->
         conn
         |> put_flash(:error, "Booking creation failed!")
         |> redirect(to: Routes.page_path(conn, :index))
@@ -109,7 +109,7 @@ defmodule CosmosodysseyWeb.BookingController do
                   |> Ecto.Changeset.put_assoc(:user, get_current_user(conn))
       case Repo.insert(changeset) do
         {:ok, booking} -> booking.id #return only ID-s for user response
-        {:error, changeset} ->
+        {:error, _changeset} ->
           conn
           |> put_flash(:error, "Booking creation failed!")
           |> redirect(to: Routes.page_path(conn, :index))
