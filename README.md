@@ -1,4 +1,6 @@
-# Cosmosodyssey
+# Cosmosodyssey project for Uptime
+
+Can be found at: https://secure-depths-39127.herokuapp.com/
 
 To start your Phoenix server:
 
@@ -6,15 +8,8 @@ To start your Phoenix server:
   * Create and migrate your database with `mix ecto.setup`
   * Install Node.js dependencies with `npm install` inside the `assets` directory
   * Start Phoenix endpoint with `mix phx.server`
+  * Two users have already been added to log in with: email "lisa@simpson.com" and password "parool", and email "bart@simpson.com" and password "parool"
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+If API fetching is unsuccessful, it might be a good idea to remove comments from database seeds in /priv/repo/seeds.exs and run `mix ecto.reset`
