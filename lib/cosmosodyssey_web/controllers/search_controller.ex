@@ -2,8 +2,6 @@ defmodule CosmosodysseyWeb.SearchController do
   use CosmosodysseyWeb, :controller
   import Ecto.Query
 
-  require Logger
-
   alias Cosmosodyssey.Repo
   import Ecto.Query
   alias Ecto.Changeset
@@ -14,7 +12,7 @@ defmodule CosmosodysseyWeb.SearchController do
   end
 
   defp add_routes_providers(price_list_json) do
-    # add the newest pric elist to repo
+    # add the newest price list to repo
     price_list_to_add = PriceList.changeset(%PriceList{}, %{id: price_list_json["id"], valid_until: price_list_json["validUntil"]})
     added_price_list = update_15_price_lists(price_list_to_add)
 
@@ -58,9 +56,6 @@ defmodule CosmosodysseyWeb.SearchController do
     query = from(pl in PriceList)
     price_lists = Repo.all(query)
     valid_pls = sort_by_validity(price_lists)
-
-    Logger.warn "valid_pls:"
-    Logger.warn inspect valid_pls
     case length(valid_pls) == 0 do
       true -> {:error, nil}
       false -> {:ok, List.first(valid_pls)}
@@ -68,18 +63,16 @@ defmodule CosmosodysseyWeb.SearchController do
   end
 
   defp update_15_price_lists(price_list_to_add) do
+    # add new price list to repo and limit price lists to 15
     query = from(pl in PriceList)
-    sorted_price_lists = Repo.all(query)
-                 |> Enum.sort( fn (pl1, pl2) ->
+    sorted_price_lists = Repo.all(query) |> Enum.sort( fn (pl1, pl2) ->
       {:ok, parsed_pl1_valid_until} = string_to_datetime(pl1.valid_until)
       {:ok, parsed_pl2_valid_until} = string_to_datetime(pl2.valid_until)
       Timex.compare( parsed_pl1_valid_until, parsed_pl2_valid_until ) >= 0
     end)
     if length(sorted_price_lists) == 15 do
-      Logger.warn "deleting older pl due to 15 limit: #{inspect sorted_price_lists}"
-      earliest_active_pl = List.last(sorted_price_lists)
-      Logger.warn "deleting: #{earliest_active_pl}"
-      Repo.delete!(earliest_active_pl)
+      Logger.warn "deleting older pl due to 15 limit"
+      Repo.delete!(List.last(sorted_price_lists))
     end
     Repo.insert!(price_list_to_add)
   end
@@ -95,7 +88,6 @@ defmodule CosmosodysseyWeb.SearchController do
         price_list = Repo.get(PriceList, price_list_json["id"])
         case price_list == nil do
           true -> # add the new price list
-            Logger.warn "add pl, routes and providers"
             added_price_list = add_routes_providers(price_list_json)
             {:ok, added_price_list}
           false -> {:ok, "Nothing added from API"} # no new price list from API
@@ -125,11 +117,9 @@ defmodule CosmosodysseyWeb.SearchController do
   end
 
   def get_providers(price_list_id, from, to) do
+    # get providers for the shortest possible route between the selected planets
     possible_route = get_shortest_route_from_to(from, to)
-    Logger.warn "possible route: #{inspect possible_route}"
-
-    pairs = Enum.chunk_every(possible_route, 2, 1, :discard)
-    Logger.warn "pairs: #{inspect pairs}"
+    pairs = Enum.chunk_every(possible_route, 2, 1, :discard) # create pairs of planets
 
     providers_of_route_pairs = pairs |> Enum.map(fn [from, to] ->
       providers = from(pl in PriceList,
@@ -147,7 +137,6 @@ defmodule CosmosodysseyWeb.SearchController do
                   distance: r.distance,
                 })
                |> Repo.all()
-      Logger.warn "length of providers: #{length(providers)}"
       case length(providers) == 0 do
         true -> nil # if at least one of subroutes has no providers, then this whole route is unsuitable
         false ->
@@ -159,28 +148,10 @@ defmodule CosmosodysseyWeb.SearchController do
           end)
       end
     end)
-
-    # query the routes and providers from repo
-    #providers = from(
-    #                     pl in PriceList,
-    #                     join: r in Route,
-    #                     join: p in Provider,
-    #                     on:
-    #                       pl.id == r.price_list_id and
-    #                       r.id == p.route_id,
-    #                     where:
-    #                       pl.id == ^price_list_id and
-    #                       r.dropoff_planet == ^to and
-    #                       r.pickup_planet == ^from,
-    #                     select: %{
-    #                      provider: p,
-    #                      distance: r.distance
-    #                     }
-    #                   )
-    #                   |> Repo.all()
     case Enum.member?(providers_of_route_pairs, nil) || length(providers_of_route_pairs) != length(pairs) do
       true -> nil
-      false -> Enum.zip(pairs, providers_of_route_pairs)
+      false ->
+        {Enum.zip(pairs, providers_of_route_pairs), pairs} # zip together the subroute and its' providers
     end
   end
 
@@ -232,25 +203,25 @@ defmodule CosmosodysseyWeb.SearchController do
                     |> redirect(to: Routes.page_path(conn, :index))
                   {:ok, added_price_list} ->
                     # presume API doesn't send erroneous non-valid data
-                    providers = get_providers(added_price_list.id, pickup_planet, dropoff_planet)
+                    {providers, pairs} = get_providers(added_price_list.id, pickup_planet, dropoff_planet)
                     case providers == nil do
                       true ->
                         conn
                         |> put_flash(:error, "No trips between those two planets found.")
                         |> redirect(to: Routes.page_path(conn, :index))
                       false ->
-                        render conn, "results.html", providers: providers, pickup_planet: pickup_planet, dropoff_planet: dropoff_planet
+                        render conn, "results.html", providers: providers, routes: pairs, pickup_planet: pickup_planet, dropoff_planet: dropoff_planet
                     end
                 end
               {:ok, price_list} ->
-                providers = get_providers(price_list.id, pickup_planet, dropoff_planet)
+                {providers, pairs} = get_providers(price_list.id, pickup_planet, dropoff_planet)
                 case providers == nil do
                   true ->
                     conn
                     |> put_flash(:error, "No trips between those two planets found.")
                     |> redirect(to: Routes.page_path(conn, :index))
                   false ->
-                    render conn, "results.html", providers: providers, pickup_planet: pickup_planet, dropoff_planet: dropoff_planet
+                    render conn, "results.html", providers: providers, routes: pairs, pickup_planet: pickup_planet, dropoff_planet: dropoff_planet
                 end
             end
         end

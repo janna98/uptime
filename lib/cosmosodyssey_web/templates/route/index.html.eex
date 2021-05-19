@@ -1,7 +1,7 @@
 <h2>Book a trip</h2><h4>The chosen trips are the shortest possible route between your selected planets <%=@pickup_planet%> and <%=@dropoff_planet%>. Please select a suitable trip from each subroute.</h4>
 <section class="results">
     <%= form_for @conn, Routes.route_path(@conn, :index), [method: :get, as: :book], fn b -> %>
-        <%= for {[from, to], provider_group} <- @providers do %>
+        <%= for {{[from, to], provider_group}, outside_idx} <- Enum.with_index(@providers) do %>
         <h3>From <span class="planet"><%=from%></span> to <span class="planet"><%=to%></span></h3>
         <table class="table">
             <thead>
@@ -10,7 +10,7 @@
                 <th>Start time</th>
                 <th>End time</th>
                 <th>Price</th>
-                <th>Distance</th>
+                <th>Distance (km)</th>
                 <th>Duration</th>
                 <th></th>
             </tr>
@@ -19,8 +19,8 @@
             <%= for {provider, idx} <- Enum.with_index(provider_group) do %>
             <tr>
                 <td><%= provider.provider.company %></td>
-                <td><%= provider.provider.start_time %></td>
-                <td><%= provider.provider.end_time %></td>
+                <td><%= CosmosodysseyWeb.BookingController.format_single_datetime(provider.provider.start_time)%></td>
+                <td><%= CosmosodysseyWeb.BookingController.format_single_datetime(provider.provider.end_time)%></td>
                 <td><%= provider.provider.price %></td>
                 <td><%= provider.distance %></td>
                 <%= if provider.duration == 1 do%>
@@ -29,15 +29,13 @@
                 <%= if provider.duration != 1 do%>
                 <td><%= provider.duration %> days</td>
                 <% end %>
-
                 <td class="text-right last-column">
                     <%= if length(@providers) == 1 do %>
                         <span><%= link "Book", id: "booking_button_#{idx}",
                         to: Routes.booking_path(@conn, :new, provider: provider.provider.id, from: @pickup_planet , to: @dropoff_planet, time: provider.duration) %></span>
                     <% end %>
                     <%= if length(@providers) > 1 do %>
-                        <%= radio_button b, "booking_opt_#{idx}", provider.provider.id, class: "form-control"  %>
-                        <%= hidden_input b, "duration_#{idx}", value: provider.duration %>
+                        <%= radio_button b, "booking_opt_#{outside_idx}", provider.provider.id, class: "form-control"  %>
                     <% end %>
                 </td>
             </tr>
@@ -47,6 +45,8 @@
         <% end %>
         <%= hidden_input b, :from, value: @pickup_planet %>
         <%= hidden_input b, :to, value: @dropoff_planet %>
+        <%= hidden_input b, :routes, value: Enum.join(@routes, "-") %>
+        <%= hidden_input b, :route_no, value: length(@providers) %>
         <%= if length(@providers) > 1 do %>
             <%= submit "Book"%>
         <% end %>

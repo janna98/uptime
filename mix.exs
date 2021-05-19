@@ -50,9 +50,7 @@ defmodule Cosmosodyssey.MixProject do
       {:httpoison, "~> 1.8"},
       {:poison, "~> 3.1"},
       {:timex, "~> 3.5"},
-      {:libgraph, "~> 0.7"},
-      {:phoenix_live_view, "~> 0.15.4"},
-      {:floki, ">= 0.30.0", only: :test}
+      {:libgraph, "~> 0.7"}
     ]
   end
 

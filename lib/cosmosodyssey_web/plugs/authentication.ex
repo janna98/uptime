@@ -1,9 +1,5 @@
 defmodule Cosmosodyssey.Authentication do
-  import Plug.Conn
   alias Cosmosodyssey.Guardian
-
-  import Ecto.Query, only: [from: 2]
-  alias Cosmosodyssey.Repo
 
   def check_credentials(user, plain_text_password) do
     if user && plain_text_password == user.password do

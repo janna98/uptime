@@ -3,29 +3,63 @@
     <h2>Book a trip from <%= @from %> to <%= @to %></h2>
 </div>
 <div class="row">
-    <div class="column">
-        <h3>Selected trip provider:</h3>
-        <h3>Selected trip start time:</h3>
-        <h3>Selected trip end time:</h3>
-        <h3>Selected trip price:</h3>
-        <h3>Selected trip duration:</h3>
+    <%= if assigns[:trip_info] do %>
+    <div class="row">
+        <div class="column">
+            <h3>Selected trip providers:</h3>
+            <h3>Selected trip total price:</h3>
+            <h3>Selected trip total duration:</h3>
+            <h3>Selected trip total distance:</h3>
+            <h3>Routes:</h3>
+        </div>
+        <div class="column">
+            <h3><%= Enum.join(@trip_info.companies, ", ") %></h3>
+            <h3><%= @trip_info.price %> euros</h3>
+            <h3><%= @trip_info.duration %> days</h3>
+            <h3><%= @trip_info.distance %> km</h3>
+            <h3><%= Enum.join(@trip_info.planets, " => ") %></h3>
+            <%= hidden_input booking, :ids, value: Enum.join(@ids, ","), class: "form-control" %>
+            <%= hidden_input booking, :time, value: @trip_info.duration, class: "form-control" %>
+        </div>
     </div>
-    <div class="column">
-        <h3><%=@provider.company%></h3>
-        <h3><%= CosmosodysseyWeb.BookingController.format_single_datetime(@provider.start_time)%></h3>
-        <h3><%= CosmosodysseyWeb.BookingController.format_single_datetime(@provider.end_time)%></h3>
-        <h3><%=@provider.price%> euros</h3>
-        <%= if @time == 1 do%>
-        <h3><%= @time %> day</h3>
-        <% end %>
-        <%= if @time != 1 do%>
-        <h3><%= @time %> days</h3>
+    <div class="row">
+        <%= for {{start_time, end_time}, idx} <- Enum.with_index(@trip_info.times) do %>
+        <div class="column">
+            <h3>Selected trip #<%= idx+1 %> start time:</h3>
+            <h3>Selected trip #<%= idx+1 %> end time:</h3>
+        </div>
+        <div class="column">
+            <h3><%= CosmosodysseyWeb.BookingController.format_single_datetime(start_time)%></h3>
+            <h3><%= CosmosodysseyWeb.BookingController.format_single_datetime(end_time)%></h3>
+        </div>
         <% end %>
     </div>
+    <% end %>
+    <%= if assigns[:provider] do %>
+        <div class="column">
+            <h3>Selected trip provider:</h3>
+            <h3>Selected trip start time:</h3>
+            <h3>Selected trip end time:</h3>
+            <h3>Selected trip price:</h3>
+            <h3>Selected trip duration:</h3>
+        </div>
+        <div class="column">
+            <h3><%=@provider.company%></h3>
+            <h3><%= CosmosodysseyWeb.BookingController.format_single_datetime(@provider.start_time)%></h3>
+            <h3><%= CosmosodysseyWeb.BookingController.format_single_datetime(@provider.end_time)%></h3>
+            <h3><%=@provider.price%> euros</h3>
+            <%= if @time == 1 do%>
+            <h3><%= @time %> day</h3>
+            <% end %>
+            <%= if @time != 1 do%>
+            <h3><%= @time %> days</h3>
+            <% end %>
+            <%= hidden_input booking, :id, value: @provider.id, class: "form-control" %>
+            <%= hidden_input booking, :time, value: @time, class: "form-control" %>
+        </div>
+    <% end %>
 </div>
 <div class="form-group">
-    <%= hidden_input booking, :id, value: @provider.id, class: "form-control" %>
-    <%= hidden_input booking, :time, value: @time, class: "form-control" %>
     <%= submit "Book a spot", id: "booking_button", class: "btn btn-primary"%>
 </div>
 <% end %>
